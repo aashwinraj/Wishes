@@ -1,204 +1,303 @@
 import { useEffect, useRef, useState } from 'react'
 
-type BurstHeart = {
+type FloatItem = {
   id: number
   left: string
   delay: string
   duration: string
+  size: string
+}
+
+type KissItem = {
+  id: number
+  left: string
+  top: string
+  delay: string
+  duration: string
+  rotation: string
+  hue: string
 }
 
 const loveNotes = [
-  'You still make my world feel soft, sparkly, and completely ours.',
-  'If I had to choose again, I would still choose you in every lifetime.',
-  'Every ordinary moment with you turns into my favorite memory.',
+  'You are still my favorite hello, my calm place, and my cutest forever.',
+  'Every little thing feels softer and sweeter because I get to share it with you.',
+  'Happy anniversary baby. I would choose your heart in every timeline.',
 ]
 
-const memoryButtons = [
-  'First cuddle energy',
-  'Movie date magic',
-  'Forever favorite human',
-]
+const noteLabels = ['Sweetest hello', 'Warmest cuddle', 'Forever us']
 
-const ambientHearts = Array.from({ length: 14 }, (_, index) => ({
+const bubbleHearts: FloatItem[] = Array.from({ length: 18 }, (_, index) => ({
   id: index,
-  left: `${4 + index * 7}%`,
+  left: `${4 + index * 5.2}%`,
+  delay: `${(index % 6) * 0.65}s`,
+  duration: `${7.8 + (index % 5) * 0.9}s`,
   size: `${18 + (index % 4) * 10}px`,
-  duration: `${9 + (index % 5)}s`,
-  delay: `${(index % 6) * 0.7}s`,
+}))
+
+const driftingKisses: KissItem[] = Array.from({ length: 12 }, (_, index) => ({
+  id: index,
+  left: `${6 + index * 7.7}%`,
+  top: `${10 + (index % 4) * 19}%`,
+  delay: `${index * 0.55}s`,
+  duration: `${8.4 + (index % 3) * 1.2}s`,
+  rotation: `${-18 + (index % 5) * 9}deg`,
+  hue: ['#ff7b9c', '#ff5c7b', '#ff97b8', '#f1486e'][index % 4],
 }))
 
 function App() {
   const [noteIndex, setNoteIndex] = useState(0)
-  const [envelopeOpen, setEnvelopeOpen] = useState(false)
-  const [burstHearts, setBurstHearts] = useState<BurstHeart[]>([])
-  const burstTimeoutRef = useRef<number | null>(null)
+  const [burstHearts, setBurstHearts] = useState<FloatItem[]>([])
+  const [burstKisses, setBurstKisses] = useState<KissItem[]>([])
+  const timeoutRef = useRef<number | null>(null)
 
   useEffect(
     () => () => {
-      if (burstTimeoutRef.current !== null) {
-        window.clearTimeout(burstTimeoutRef.current)
+      if (timeoutRef.current !== null) {
+        window.clearTimeout(timeoutRef.current)
       }
     },
     [],
   )
 
-  const createHeartBurst = () => {
-    const nextNote = (noteIndex + 1) % loveNotes.length
-    setNoteIndex(nextNote)
+  const triggerLoveStorm = () => {
+    const nextIndex = (noteIndex + 1) % loveNotes.length
+    setNoteIndex(nextIndex)
 
-    const batch = Array.from({ length: 12 }, (_, index) => ({
+    const heartBatch: FloatItem[] = Array.from({ length: 14 }, (_, index) => ({
       id: Date.now() + index,
-      left: `${18 + index * 5.5}%`,
-      delay: `${index * 0.08}s`,
-      duration: `${2.9 + (index % 3) * 0.35}s`,
+      left: `${18 + index * 4.5}%`,
+      delay: `${index * 0.07}s`,
+      duration: `${2.6 + (index % 4) * 0.28}s`,
+      size: `${20 + (index % 3) * 10}px`,
     }))
 
-    setBurstHearts(batch)
+    const kissBatch: KissItem[] = Array.from({ length: 8 }, (_, index) => ({
+      id: Date.now() + 100 + index,
+      left: `${12 + index * 10}%`,
+      top: `${58 - (index % 3) * 8}%`,
+      delay: `${index * 0.08}s`,
+      duration: `${2.3 + (index % 3) * 0.22}s`,
+      rotation: `${-25 + index * 7}deg`,
+      hue: ['#ff8aa7', '#ff5d7a', '#ff7292', '#d92d58'][index % 4],
+    }))
 
-    if (burstTimeoutRef.current !== null) {
-      window.clearTimeout(burstTimeoutRef.current)
+    setBurstHearts(heartBatch)
+    setBurstKisses(kissBatch)
+
+    if (timeoutRef.current !== null) {
+      window.clearTimeout(timeoutRef.current)
     }
 
-    burstTimeoutRef.current = window.setTimeout(() => setBurstHearts([]), 3600)
+    timeoutRef.current = window.setTimeout(() => {
+      setBurstHearts([])
+      setBurstKisses([])
+    }, 3200)
   }
 
   return (
     <main className="page-shell">
-      <div className="sky-glow sky-glow-left" />
-      <div className="sky-glow sky-glow-right" />
+      <div className="veil veil-left" />
+      <div className="veil veil-right" />
 
-      <div className="ambient-hearts" aria-hidden="true">
-        {ambientHearts.map((heart) => (
+      <div className="bubble-layer" aria-hidden="true">
+        {bubbleHearts.map((heart) => (
           <span
             key={heart.id}
-            className="heart"
+            className="bubble-heart"
             style={{
               left: heart.left,
               width: heart.size,
               height: heart.size,
-              animationDuration: heart.duration,
               animationDelay: heart.delay,
+              animationDuration: heart.duration,
             }}
           />
         ))}
       </div>
 
-      <section className="hero-card">
-        <div className="hero-copy">
-          <p className="eyebrow">Our sweetest little celebration</p>
+      <div className="kiss-layer" aria-hidden="true">
+        {driftingKisses.map((kiss) => (
+          <span
+            key={kiss.id}
+            className="kiss-mark"
+            style={{
+              left: kiss.left,
+              top: kiss.top,
+              animationDelay: kiss.delay,
+              animationDuration: kiss.duration,
+              ['--kiss-rotation' as string]: kiss.rotation,
+              color: kiss.hue,
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="viewport-frame">
+        <section className="top-copy">
+          <p className="eyebrow">For my baby, with extra mush</p>
           <h1>Happy Anniversary Baby</h1>
           <p className="intro">
-            A tiny love-filled page for the person who makes every day softer,
-            sillier, warmer, and a whole lot prettier.
+            A full-screen little love world with roses, kisses, heart bubbles,
+            and all the soft dramatic romance you asked for.
           </p>
-        </div>
+        </section>
 
-        <div className="cta-row">
-          <button type="button" className="primary-button" onClick={createHeartBurst}>
-            Make it rain hearts
-          </button>
-          <button
-            type="button"
-            className="secondary-button"
-            onClick={() => setEnvelopeOpen((open) => !open)}
-          >
-            {envelopeOpen ? 'Hide love note' : 'Open love note'}
-          </button>
-        </div>
+        <section className="main-stage" aria-label="Anniversary scene">
+          <div className="rose-column rose-column-left" aria-hidden="true">
+            <div className="rose rose-large">
+              <span className="petal petal-a" />
+              <span className="petal petal-b" />
+              <span className="petal petal-c" />
+              <span className="petal petal-d" />
+              <span className="rose-core" />
+              <span className="stem" />
+              <span className="leaf leaf-left" />
+              <span className="leaf leaf-right" />
+            </div>
+            <div className="rose rose-small">
+              <span className="petal petal-a" />
+              <span className="petal petal-b" />
+              <span className="petal petal-c" />
+              <span className="petal petal-d" />
+              <span className="rose-core" />
+              <span className="stem" />
+              <span className="leaf leaf-left" />
+              <span className="leaf leaf-right" />
+            </div>
+          </div>
 
-        <div className="burst-layer" aria-hidden="true">
-          {burstHearts.map((heart) => (
-            <span
-              key={heart.id}
-              className="heart burst-heart"
-              style={{
-                left: heart.left,
-                animationDelay: heart.delay,
-                animationDuration: heart.duration,
-              }}
-            />
-          ))}
-        </div>
+          <div className="center-stage">
+            <div className="sparkles" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+              <span />
+              <span />
+              <span />
+            </div>
 
-        <div className={`envelope ${envelopeOpen ? 'open' : ''}`}>
-          <div className="envelope-top" />
-          <div className="letter">
-            <p className="letter-label">Love note</p>
+            <div className="storm-layer" aria-hidden="true">
+              {burstHearts.map((heart) => (
+                <span
+                  key={heart.id}
+                  className="bubble-heart burst-heart"
+                  style={{
+                    left: heart.left,
+                    width: heart.size,
+                    height: heart.size,
+                    animationDelay: heart.delay,
+                    animationDuration: heart.duration,
+                  }}
+                />
+              ))}
+
+              {burstKisses.map((kiss) => (
+                <span
+                  key={kiss.id}
+                  className="kiss-mark kiss-burst"
+                  style={{
+                    left: kiss.left,
+                    top: kiss.top,
+                    animationDelay: kiss.delay,
+                    animationDuration: kiss.duration,
+                    ['--kiss-rotation' as string]: kiss.rotation,
+                    color: kiss.hue,
+                  }}
+                />
+              ))}
+            </div>
+
+            <div className="couple-stage">
+              <div className="bunny">
+                <div className="ear ear-left" />
+                <div className="ear ear-right" />
+                <div className="face">
+                  <span className="eye eye-left" />
+                  <span className="eye eye-right" />
+                  <span className="nose" />
+                  <span className="blush blush-left" />
+                  <span className="blush blush-right" />
+                </div>
+                <div className="body">
+                  <span className="paw paw-left" />
+                  <span className="paw paw-right" />
+                </div>
+              </div>
+
+              <div className="heart-core">
+                <div className="big-heart" />
+                <div className="halo-ring halo-one" />
+                <div className="halo-ring halo-two" />
+                <p>Together is my favorite place</p>
+              </div>
+
+              <div className="bunny bunny-right">
+                <div className="ear ear-left" />
+                <div className="ear ear-right" />
+                <div className="face">
+                  <span className="eye eye-left" />
+                  <span className="eye eye-right" />
+                  <span className="nose" />
+                  <span className="blush blush-left" />
+                  <span className="blush blush-right" />
+                </div>
+                <div className="body">
+                  <span className="paw paw-left" />
+                  <span className="paw paw-right" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="rose-column rose-column-right" aria-hidden="true">
+            <div className="rose rose-small">
+              <span className="petal petal-a" />
+              <span className="petal petal-b" />
+              <span className="petal petal-c" />
+              <span className="petal petal-d" />
+              <span className="rose-core" />
+              <span className="stem" />
+              <span className="leaf leaf-left" />
+              <span className="leaf leaf-right" />
+            </div>
+            <div className="rose rose-large">
+              <span className="petal petal-a" />
+              <span className="petal petal-b" />
+              <span className="petal petal-c" />
+              <span className="petal petal-d" />
+              <span className="rose-core" />
+              <span className="stem" />
+              <span className="leaf leaf-left" />
+              <span className="leaf leaf-right" />
+            </div>
+          </div>
+        </section>
+
+        <section className="bottom-panel">
+          <div className="cta-row">
+            <button type="button" className="primary-button" onClick={triggerLoveStorm}>
+              Shower me with love
+            </button>
+            <div className="memory-actions">
+              {noteLabels.map((label, index) => (
+                <button
+                  key={label}
+                  type="button"
+                  className={index === noteIndex ? 'memory-chip active' : 'memory-chip'}
+                  onClick={() => setNoteIndex(index)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="note-card">
+            <div className="mini-kiss" aria-hidden="true" />
             <p>{loveNotes[noteIndex]}</p>
           </div>
-        </div>
-      </section>
-
-      <section className="cartoon-stage" aria-label="Cute anniversary scene">
-        <div className="sparkles" aria-hidden="true">
-          <span />
-          <span />
-          <span />
-          <span />
-        </div>
-
-        <div className="character bunny bunny-left">
-          <div className="ear ear-left" />
-          <div className="ear ear-right" />
-          <div className="face">
-            <span className="eye eye-left" />
-            <span className="eye eye-right" />
-            <span className="nose" />
-            <span className="blush blush-left" />
-            <span className="blush blush-right" />
-          </div>
-          <div className="body">
-            <span className="paw paw-left" />
-            <span className="paw paw-right" />
-          </div>
-        </div>
-
-        <div className="love-centerpiece">
-          <div className="big-heart" aria-hidden="true" />
-          <p>Together is my favorite place.</p>
-        </div>
-
-        <div className="character bunny bunny-right">
-          <div className="ear ear-left" />
-          <div className="ear ear-right" />
-          <div className="face">
-            <span className="eye eye-left" />
-            <span className="eye eye-right" />
-            <span className="nose" />
-            <span className="blush blush-left" />
-            <span className="blush blush-right" />
-          </div>
-          <div className="body">
-            <span className="paw paw-left" />
-            <span className="paw paw-right" />
-          </div>
-        </div>
-      </section>
-
-      <section className="memory-board">
-        <div>
-          <p className="board-kicker">Tap around for extra mush</p>
-          <h2>Three tiny reminders from my heart</h2>
-        </div>
-
-        <div className="memory-actions">
-          {memoryButtons.map((label, index) => (
-            <button
-              key={label}
-              type="button"
-              className={index === noteIndex ? 'memory-chip active' : 'memory-chip'}
-              onClick={() => setNoteIndex(index)}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-
-        <div className="quote-card">
-          <div className="quote-heart" aria-hidden="true" />
-          <p>{loveNotes[noteIndex]}</p>
-        </div>
-      </section>
+        </section>
+      </div>
     </main>
   )
 }
