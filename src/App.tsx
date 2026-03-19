@@ -8,12 +8,12 @@ type FloatItem = {
   size: string
 }
 
-const heartBubbles: FloatItem[] = Array.from({ length: 18 }, (_, index) => ({
+const heartBubbles: FloatItem[] = Array.from({ length: 34 }, (_, index) => ({
   id: index,
-  left: `${4 + index * 5.3}%`,
-  delay: `${(index % 6) * 0.6}s`,
-  duration: `${8 + (index % 5) * 0.8}s`,
-  size: `${16 + (index % 4) * 10}px`,
+  left: `${2 + ((index * 17) % 96)}%`,
+  delay: `${(index % 8) * 0.45}s`,
+  duration: `${6.4 + (index % 6) * 0.7}s`,
+  size: `${14 + (index % 5) * 9}px`,
 }))
 
 function App() {
