@@ -222,6 +222,15 @@ h1 {
   overflow: visible;
 }
 
+.gift-box-wrap {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(calc(-50% + var(--gift-x, 0px)), calc(-50% + var(--gift-y, 0px)));
+  transition: transform 210ms cubic-bezier(0.2, 0.82, 0.24, 1.02);
+  z-index: 3;
+}
+
 .plush-row {
   position: absolute;
   left: 50%;
@@ -433,17 +442,14 @@ h1 {
 }
 
 .gift-box {
-  position: absolute;
-  left: 50%;
-  top: 50%;
+  position: relative;
   width: clamp(150px, 18vw, 220px);
   height: clamp(150px, 18vw, 220px);
-  transform: translate(-50%, -50%);
+  transform: translateY(0);
   background: transparent;
   border: 0;
   cursor: pointer;
   transition: transform 320ms ease, opacity 320ms ease, filter 220ms ease;
-  z-index: 3;
   animation: giftBounce 2.6s ease-in-out infinite;
 }
 
@@ -458,7 +464,7 @@ h1 {
 }
 
 .gift-box.opened {
-  transform: translate(-50%, -66%) scale(0.72);
+  transform: translateY(-16%) scale(0.72);
   opacity: 0.2;
   pointer-events: none;
   animation: none;
@@ -1018,11 +1024,11 @@ h1 {
 @keyframes giftBounce {
   0%,
   100% {
-    transform: translate(-50%, -50%) scale(1);
+    transform: translateY(0) scale(1);
   }
 
   50% {
-    transform: translate(-50%, -53%) scale(1.03);
+    transform: translateY(-10px) scale(1.03);
   }
 }
 

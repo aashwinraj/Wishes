@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState, type CSSProperties } from 'react'
 
 type FloatItem = {
   id: number
@@ -19,6 +19,9 @@ const heartBubbles: FloatItem[] = Array.from({ length: 34 }, (_, index) => ({
 function App() {
   const [giftOpened, setGiftOpened] = useState(false)
   const [letterOpened, setLetterOpened] = useState(false)
+  const [dodgeCount, setDodgeCount] = useState(0)
+  const [giftOffset, setGiftOffset] = useState({ x: 0, y: 0 })
+  const centerSceneRef = useRef<HTMLDivElement | null>(null)
 
   const floatingKisses = useMemo(
     () =>
@@ -35,10 +38,36 @@ function App() {
   )
 
   const prompt = !giftOpened
-    ? 'Click the gift box'
+    ? dodgeCount === 0
+      ? 'Catch the gift box'
+      : dodgeCount === 1
+        ? 'It ran away... try again'
+        : 'Now click the gift box'
     : !letterOpened
       ? 'Click the envelope to open your love letter'
       : 'Happy 5 year anniversary baby'
+
+  const dodgeGift = (clientX: number, clientY: number, width: number, height: number) => {
+    const stage = centerSceneRef.current
+
+    if (!stage || giftOpened || dodgeCount >= 2) {
+      return
+    }
+
+    const stageRect = stage.getBoundingClientRect()
+    const centerX = stageRect.left + stageRect.width / 2
+    const centerY = stageRect.top + stageRect.height / 2
+    const horizontalRoom = Math.max(40, stageRect.width / 2 - width / 2 - 30)
+    const verticalRoom = Math.max(30, stageRect.height / 2 - height / 2 - 24)
+    const directionX = clientX <= centerX ? 1 : -1
+    const directionY = clientY <= centerY ? 1 : -1
+
+    setGiftOffset({
+      x: directionX * horizontalRoom * (0.5 + Math.random() * 0.28),
+      y: directionY * verticalRoom * (0.2 + Math.random() * 0.5),
+    })
+    setDodgeCount((count) => count + 1)
+  }
 
   return (
     <main className="page-shell">
@@ -121,7 +150,7 @@ function App() {
             </div>
           </div>
 
-          <div className="center-scene">
+          <div className="center-scene" ref={centerSceneRef}>
             <div className="halo-ring halo-one" />
             <div className="halo-ring halo-two" />
 
@@ -157,22 +186,51 @@ function App() {
               </div>
             </div>
 
-            <button
-              type="button"
-              className={`gift-box ${giftOpened ? 'opened' : ''}`}
-              onClick={() => {
-                setGiftOpened(true)
-                setLetterOpened(false)
-              }}
-              aria-label="Open gift box"
+            <div
+              className="gift-box-wrap"
+              style={
+                {
+                  ['--gift-x' as string]: `${giftOffset.x}px`,
+                  ['--gift-y' as string]: `${giftOffset.y}px`,
+                } as CSSProperties
+              }
             >
-              <span className="gift-lid" />
-              <span className="gift-ribbon-vertical" />
-              <span className="gift-ribbon-horizontal" />
-              <span className="gift-bow bow-left" />
-              <span className="gift-bow bow-right" />
-              <span className="gift-box-base" />
-            </button>
+              <button
+                type="button"
+                className={`gift-box ${giftOpened ? 'opened' : ''}`}
+                onMouseEnter={(event) => {
+                  dodgeGift(
+                    event.clientX,
+                    event.clientY,
+                    event.currentTarget.offsetWidth,
+                    event.currentTarget.offsetHeight,
+                  )
+                }}
+                onClick={(event) => {
+                  if (dodgeCount < 2) {
+                    dodgeGift(
+                      event.clientX,
+                      event.clientY,
+                      event.currentTarget.offsetWidth,
+                      event.currentTarget.offsetHeight,
+                    )
+                    return
+                  }
+
+                  setGiftOffset({ x: 0, y: 0 })
+                  setGiftOpened(true)
+                  setLetterOpened(false)
+                }}
+                aria-label="Open gift box"
+              >
+                <span className="gift-lid" />
+                <span className="gift-ribbon-vertical" />
+                <span className="gift-ribbon-horizontal" />
+                <span className="gift-bow bow-left" />
+                <span className="gift-bow bow-right" />
+                <span className="gift-box-base" />
+              </button>
+            </div>
 
             <button
               type="button"
