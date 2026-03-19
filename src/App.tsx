@@ -50,16 +50,6 @@ function App() {
     [],
   )
 
-  const prompt = !giftOpened
-    ? dodgeCount < requiredDodges
-      ? dodgeCount === 0
-        ? 'Catch the gift box'
-        : `It dodged you... ${requiredDodges - dodgeCount} escapes left`
-      : 'Now click the gift box'
-    : !letterOpened
-      ? 'Click the envelope to open your love letter'
-      : 'Happy 5 year anniversary baby'
-
   const dodgeGift = (clientX: number, clientY: number, width: number, height: number) => {
     const stage = centerSceneRef.current
 
@@ -347,9 +337,7 @@ function App() {
           </div>
         </section>
 
-        <footer className="prompt-panel">
-          <div className={`prompt-badge ${giftOpened ? 'glow' : ''}`}>{prompt}</div>
-        </footer>
+       
       </div>
     </main>
   )
