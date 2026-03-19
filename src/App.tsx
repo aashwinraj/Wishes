@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 type FloatItem = {
   id: number
@@ -8,91 +8,37 @@ type FloatItem = {
   size: string
 }
 
-type KissItem = {
-  id: number
-  left: string
-  top: string
-  delay: string
-  duration: string
-  rotation: string
-  hue: string
-}
-
-const loveNotes = [
-  'You are still my favorite hello, my calm place, and my cutest forever.',
-  'Every little thing feels softer and sweeter because I get to share it with you.',
-  'Happy anniversary baby. I would choose your heart in every timeline.',
-]
-
-const noteLabels = ['Sweetest hello', 'Warmest cuddle', 'Forever us']
-
-const bubbleHearts: FloatItem[] = Array.from({ length: 18 }, (_, index) => ({
+const heartBubbles: FloatItem[] = Array.from({ length: 18 }, (_, index) => ({
   id: index,
-  left: `${4 + index * 5.2}%`,
-  delay: `${(index % 6) * 0.65}s`,
-  duration: `${7.8 + (index % 5) * 0.9}s`,
-  size: `${18 + (index % 4) * 10}px`,
-}))
-
-const driftingKisses: KissItem[] = Array.from({ length: 12 }, (_, index) => ({
-  id: index,
-  left: `${6 + index * 7.7}%`,
-  top: `${10 + (index % 4) * 19}%`,
-  delay: `${index * 0.55}s`,
-  duration: `${8.4 + (index % 3) * 1.2}s`,
-  rotation: `${-18 + (index % 5) * 9}deg`,
-  hue: ['#ff7b9c', '#ff5c7b', '#ff97b8', '#f1486e'][index % 4],
+  left: `${4 + index * 5.3}%`,
+  delay: `${(index % 6) * 0.6}s`,
+  duration: `${8 + (index % 5) * 0.8}s`,
+  size: `${16 + (index % 4) * 10}px`,
 }))
 
 function App() {
-  const [noteIndex, setNoteIndex] = useState(0)
-  const [burstHearts, setBurstHearts] = useState<FloatItem[]>([])
-  const [burstKisses, setBurstKisses] = useState<KissItem[]>([])
-  const timeoutRef = useRef<number | null>(null)
+  const [giftOpened, setGiftOpened] = useState(false)
+  const [letterOpened, setLetterOpened] = useState(false)
 
-  useEffect(
-    () => () => {
-      if (timeoutRef.current !== null) {
-        window.clearTimeout(timeoutRef.current)
-      }
-    },
+  const floatingKisses = useMemo(
+    () =>
+      Array.from({ length: 10 }, (_, index) => ({
+        id: index,
+        left: `${8 + index * 8.6}%`,
+        top: `${12 + (index % 4) * 18}%`,
+        delay: `${index * 0.55}s`,
+        duration: `${7.8 + (index % 3) * 1.1}s`,
+        rotation: `${-16 + (index % 5) * 8}deg`,
+        hue: ['#ff84a8', '#ff5d7d', '#ff9abb', '#d93561'][index % 4],
+      })),
     [],
   )
 
-  const triggerLoveStorm = () => {
-    const nextIndex = (noteIndex + 1) % loveNotes.length
-    setNoteIndex(nextIndex)
-
-    const heartBatch: FloatItem[] = Array.from({ length: 14 }, (_, index) => ({
-      id: Date.now() + index,
-      left: `${18 + index * 4.5}%`,
-      delay: `${index * 0.07}s`,
-      duration: `${2.6 + (index % 4) * 0.28}s`,
-      size: `${20 + (index % 3) * 10}px`,
-    }))
-
-    const kissBatch: KissItem[] = Array.from({ length: 8 }, (_, index) => ({
-      id: Date.now() + 100 + index,
-      left: `${12 + index * 10}%`,
-      top: `${58 - (index % 3) * 8}%`,
-      delay: `${index * 0.08}s`,
-      duration: `${2.3 + (index % 3) * 0.22}s`,
-      rotation: `${-25 + index * 7}deg`,
-      hue: ['#ff8aa7', '#ff5d7a', '#ff7292', '#d92d58'][index % 4],
-    }))
-
-    setBurstHearts(heartBatch)
-    setBurstKisses(kissBatch)
-
-    if (timeoutRef.current !== null) {
-      window.clearTimeout(timeoutRef.current)
-    }
-
-    timeoutRef.current = window.setTimeout(() => {
-      setBurstHearts([])
-      setBurstKisses([])
-    }, 3200)
-  }
+  const prompt = !giftOpened
+    ? 'Click the gift box'
+    : !letterOpened
+      ? 'Click the envelope to open your love letter'
+      : 'Happy 5 year anniversary baby'
 
   return (
     <main className="page-shell">
@@ -100,7 +46,7 @@ function App() {
       <div className="veil veil-right" />
 
       <div className="bubble-layer" aria-hidden="true">
-        {bubbleHearts.map((heart) => (
+        {heartBubbles.map((heart) => (
           <span
             key={heart.id}
             className="bubble-heart"
@@ -116,7 +62,7 @@ function App() {
       </div>
 
       <div className="kiss-layer" aria-hidden="true">
-        {driftingKisses.map((kiss) => (
+        {floatingKisses.map((kiss) => (
           <span
             key={kiss.id}
             className="kiss-mark"
@@ -133,17 +79,16 @@ function App() {
       </div>
 
       <div className="viewport-frame">
-        <section className="top-copy">
-          <p className="eyebrow">For my baby, with extra mush</p>
+        <header className="hero-copy">
+          <p className="eyebrow">A tiny surprise for my favorite person</p>
           <h1>Happy Anniversary Baby</h1>
           <p className="intro">
-            A full-screen little love world with roses, kisses, heart bubbles,
-            and all the soft dramatic romance you asked for.
+            One little present, one little envelope, and one very big forever kind of love.
           </p>
-        </section>
+        </header>
 
-        <section className="main-stage" aria-label="Anniversary scene">
-          <div className="rose-column rose-column-left" aria-hidden="true">
+        <section className="interactive-stage">
+          <div className={`rose-cluster rose-left ${giftOpened ? 'active' : ''}`} aria-hidden="true">
             <div className="rose rose-large">
               <span className="petal petal-a" />
               <span className="petal petal-b" />
@@ -166,137 +111,108 @@ function App() {
             </div>
           </div>
 
-          <div className="center-stage">
-            <div className="sparkles" aria-hidden="true">
-              <span />
-              <span />
-              <span />
-              <span />
-              <span />
-              <span />
-            </div>
-
-            <div className="storm-layer" aria-hidden="true">
-              {burstHearts.map((heart) => (
-                <span
-                  key={heart.id}
-                  className="bubble-heart burst-heart"
-                  style={{
-                    left: heart.left,
-                    width: heart.size,
-                    height: heart.size,
-                    animationDelay: heart.delay,
-                    animationDuration: heart.duration,
-                  }}
-                />
-              ))}
-
-              {burstKisses.map((kiss) => (
-                <span
-                  key={kiss.id}
-                  className="kiss-mark kiss-burst"
-                  style={{
-                    left: kiss.left,
-                    top: kiss.top,
-                    animationDelay: kiss.delay,
-                    animationDuration: kiss.duration,
-                    ['--kiss-rotation' as string]: kiss.rotation,
-                    color: kiss.hue,
-                  }}
-                />
-              ))}
-            </div>
-
-            <div className="couple-stage">
-              <div className="bunny">
-                <div className="ear ear-left" />
-                <div className="ear ear-right" />
-                <div className="face">
-                  <span className="eye eye-left" />
-                  <span className="eye eye-right" />
-                  <span className="nose" />
-                  <span className="blush blush-left" />
-                  <span className="blush blush-right" />
-                </div>
-                <div className="body">
-                  <span className="paw paw-left" />
-                  <span className="paw paw-right" />
-                </div>
-              </div>
-
-              <div className="heart-core">
-                <div className="big-heart" />
-                <div className="halo-ring halo-one" />
-                <div className="halo-ring halo-two" />
-                <p>Together is my favorite place</p>
-              </div>
-
-              <div className="bunny bunny-right">
-                <div className="ear ear-left" />
-                <div className="ear ear-right" />
-                <div className="face">
-                  <span className="eye eye-left" />
-                  <span className="eye eye-right" />
-                  <span className="nose" />
-                  <span className="blush blush-left" />
-                  <span className="blush blush-right" />
-                </div>
-                <div className="body">
-                  <span className="paw paw-left" />
-                  <span className="paw paw-right" />
-                </div>
-              </div>
+          <div className={`dove-group dove-left ${giftOpened ? 'active' : ''}`} aria-hidden="true">
+            <div className="dove">
+              <span className="dove-wing wing-back" />
+              <span className="dove-body" />
+              <span className="dove-wing wing-front" />
+              <span className="dove-head" />
+              <span className="dove-beak" />
             </div>
           </div>
 
-          <div className="rose-column rose-column-right" aria-hidden="true">
-            <div className="rose rose-small">
-              <span className="petal petal-a" />
-              <span className="petal petal-b" />
-              <span className="petal petal-c" />
-              <span className="petal petal-d" />
-              <span className="rose-core" />
-              <span className="stem" />
-              <span className="leaf leaf-left" />
-              <span className="leaf leaf-right" />
-            </div>
-            <div className="rose rose-large">
-              <span className="petal petal-a" />
-              <span className="petal petal-b" />
-              <span className="petal petal-c" />
-              <span className="petal petal-d" />
-              <span className="rose-core" />
-              <span className="stem" />
-              <span className="leaf leaf-left" />
-              <span className="leaf leaf-right" />
-            </div>
-          </div>
-        </section>
+          <div className="center-scene">
+            <div className="halo-ring halo-one" />
+            <div className="halo-ring halo-two" />
 
-        <section className="bottom-panel">
-          <div className="cta-row">
-            <button type="button" className="primary-button" onClick={triggerLoveStorm}>
-              Shower me with love
+            <button
+              type="button"
+              className={`gift-box ${giftOpened ? 'opened' : ''}`}
+              onClick={() => {
+                setGiftOpened(true)
+                setLetterOpened(false)
+              }}
+              aria-label="Open gift box"
+            >
+              <span className="gift-lid" />
+              <span className="gift-ribbon-vertical" />
+              <span className="gift-ribbon-horizontal" />
+              <span className="gift-bow bow-left" />
+              <span className="gift-bow bow-right" />
+              <span className="gift-box-base" />
             </button>
-            <div className="memory-actions">
-              {noteLabels.map((label, index) => (
-                <button
-                  key={label}
-                  type="button"
-                  className={index === noteIndex ? 'memory-chip active' : 'memory-chip'}
-                  onClick={() => setNoteIndex(index)}
-                >
-                  {label}
-                </button>
-              ))}
+
+            <button
+              type="button"
+              className={`envelope-stage ${giftOpened ? 'visible' : ''} ${letterOpened ? 'open' : ''}`}
+              onClick={() => {
+                if (giftOpened) {
+                  setLetterOpened(true)
+                }
+              }}
+              aria-label="Open envelope"
+            >
+              <span className="envelope-shadow" />
+              <span className="envelope-back" />
+              <span className="envelope-flap" />
+              <span className="envelope-front" />
+              <span className="wax-seal" />
+              <span className="letter-sheet">
+                <span className="letter-title">To My Baby</span>
+                <span className="letter-message">
+                  Happy 5 year anniversary baby. Thank you for being my safest place, my sweetest smile,
+                  and my forever favorite love story.
+                </span>
+              </span>
+            </button>
+
+            <div className={`petal-burst ${giftOpened ? 'active' : ''}`} aria-hidden="true">
+              <span />
+              <span />
+              <span />
+              <span />
+              <span />
+              <span />
             </div>
           </div>
 
-          <div className="note-card">
-            <div className="mini-kiss" aria-hidden="true" />
-            <p>{loveNotes[noteIndex]}</p>
+          <div className={`dove-group dove-right ${giftOpened ? 'active' : ''}`} aria-hidden="true">
+            <div className="dove">
+              <span className="dove-wing wing-back" />
+              <span className="dove-body" />
+              <span className="dove-wing wing-front" />
+              <span className="dove-head" />
+              <span className="dove-beak" />
+            </div>
+          </div>
+
+          <div className={`rose-cluster rose-right ${giftOpened ? 'active' : ''}`} aria-hidden="true">
+            <div className="rose rose-small">
+              <span className="petal petal-a" />
+              <span className="petal petal-b" />
+              <span className="petal petal-c" />
+              <span className="petal petal-d" />
+              <span className="rose-core" />
+              <span className="stem" />
+              <span className="leaf leaf-left" />
+              <span className="leaf leaf-right" />
+            </div>
+            <div className="rose rose-large">
+              <span className="petal petal-a" />
+              <span className="petal petal-b" />
+              <span className="petal petal-c" />
+              <span className="petal petal-d" />
+              <span className="rose-core" />
+              <span className="stem" />
+              <span className="leaf leaf-left" />
+              <span className="leaf leaf-right" />
+            </div>
           </div>
         </section>
+
+        <footer className="prompt-panel">
+          <div className={`prompt-badge ${giftOpened ? 'glow' : ''}`}>{prompt}</div>
+        </footer>
       </div>
     </main>
   )
