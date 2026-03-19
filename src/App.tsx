@@ -25,6 +25,7 @@ function App() {
   const [isDodging, setIsDodging] = useState(false)
   const centerSceneRef = useRef<HTMLDivElement | null>(null)
   const dodgeTimeoutRef = useRef<number | null>(null)
+  const dodgeCooldownRef = useRef(0)
 
   useEffect(
     () => () => {
@@ -66,29 +67,33 @@ function App() {
       return
     }
 
+    const now = Date.now()
+    if (now - dodgeCooldownRef.current < 140) {
+      return
+    }
+
     const stageRect = stage.getBoundingClientRect()
     const cursorX = clientX - stageRect.left - stageRect.width / 2
     const cursorY = clientY - stageRect.top - stageRect.height / 2
-    const maxX = Math.max(180, stageRect.width / 2 - width / 2 - 8)
-    const maxY = Math.max(110, stageRect.height / 2 - height / 2 - 8)
-    const minJump = Math.max(220, stageRect.width * 0.42)
-    let nextX = giftOffset.x
-    let nextY = giftOffset.y
+    const maxX = Math.max(140, stageRect.width / 2 - width / 2 - 10)
+    const maxY = Math.max(90, stageRect.height / 2 - height / 2 - 10)
 
-    for (let attempt = 0; attempt < 16; attempt += 1) {
-      const candidateX = (Math.random() < 0.5 ? -1 : 1) * maxX * (0.82 + Math.random() * 0.18)
-      const candidateY = (Math.random() < 0.5 ? -1 : 1) * maxY * (0.58 + Math.random() * 0.42)
-      const jumpFromCurrent = Math.hypot(candidateX - giftOffset.x, candidateY - giftOffset.y)
-      const jumpFromCursor = Math.hypot(candidateX - cursorX, candidateY - cursorY)
-
-      if (jumpFromCurrent >= minJump && jumpFromCursor >= minJump * 0.8) {
-        nextX = candidateX
-        nextY = candidateY
-        break
+    const candidates = Array.from({ length: 12 }, () => {
+      const candidateX = (Math.random() * 2 - 1) * maxX
+      const candidateY = (Math.random() * 2 - 1) * maxY
+      const cursorDistance = Math.hypot(candidateX - cursorX, candidateY - cursorY)
+      const travelDistance = Math.hypot(candidateX - giftOffset.x, candidateY - giftOffset.y)
+      return {
+        x: candidateX,
+        y: candidateY,
+        score: cursorDistance * 1.35 + travelDistance,
       }
-    }
+    }).sort((a, b) => b.score - a.score)
 
-    setGiftOffset({ x: nextX, y: nextY })
+    const bestCandidate = candidates[0]
+
+    dodgeCooldownRef.current = now
+    setGiftOffset({ x: bestCandidate.x, y: bestCandidate.y })
     setDodgeCount((count) => count + 1)
     setIsDodging(true)
 
@@ -230,13 +235,23 @@ function App() {
               <button
                 type="button"
                 className={`gift-box ${giftOpened ? 'opened' : ''}`}
-                onMouseEnter={(event) => {
+                onPointerEnter={(event) => {
                   dodgeGift(
                     event.clientX,
                     event.clientY,
                     event.currentTarget.offsetWidth,
                     event.currentTarget.offsetHeight,
                   )
+                }}
+                onPointerMove={(event) => {
+                  if (dodgeCount < requiredDodges) {
+                    dodgeGift(
+                      event.clientX,
+                      event.clientY,
+                      event.currentTarget.offsetWidth,
+                      event.currentTarget.offsetHeight,
+                    )
+                  }
                 }}
                 onClick={(event) => {
                   if (dodgeCount < requiredDodges) {
