@@ -16,6 +16,14 @@ const heartBubbles: FloatItem[] = Array.from({ length: 34 }, (_, index) => ({
   size: `${14 + (index % 5) * 9}px`,
 }))
 
+const centerHeartBubbles: FloatItem[] = Array.from({ length: 28 }, (_, index) => ({
+  id: index,
+  left: `${8 + ((index * 11) % 82)}%`,
+  delay: `${(index % 7) * 0.38}s`,
+  duration: `${4.6 + (index % 5) * 0.52}s`,
+  size: `${10 + (index % 4) * 8}px`,
+}))
+
 function App() {
   const [giftOpened, setGiftOpened] = useState(false)
   const [letterOpened, setLetterOpened] = useState(false)
@@ -180,6 +188,22 @@ function App() {
           <div className="center-scene" ref={centerSceneRef}>
             <div className="halo-ring halo-one" />
             <div className="halo-ring halo-two" />
+
+            <div className="center-bubble-layer" aria-hidden="true">
+              {centerHeartBubbles.map((heart) => (
+                <span
+                  key={heart.id}
+                  className="bubble-heart center-bubble-heart"
+                  style={{
+                    left: heart.left,
+                    width: heart.size,
+                    height: heart.size,
+                    animationDelay: heart.delay,
+                    animationDuration: heart.duration,
+                  }}
+                />
+              ))}
+            </div>
 
             <div className={`plush-row ${giftOpened ? 'active' : ''}`} aria-hidden="true">
               <div className="plush teddy-bear">
