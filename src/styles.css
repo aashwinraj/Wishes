@@ -222,6 +222,199 @@ h1 {
   overflow: visible;
 }
 
+.plush-row {
+  position: absolute;
+  left: 50%;
+  top: 53%;
+  width: min(560px, 86%);
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  transform: translate(-50%, 10%) scale(0.84);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 620ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 620ms ease;
+  z-index: 4;
+}
+
+.plush-row.active {
+  transform: translate(-50%, -22%) scale(1);
+  opacity: 1;
+}
+
+.plush {
+  position: relative;
+  width: clamp(84px, 9vw, 122px);
+  height: clamp(112px, 12vw, 156px);
+  animation: plushBounce 2.8s ease-in-out infinite;
+}
+
+.panda-bear {
+  animation-delay: 0.45s;
+}
+
+.bear-ear,
+.bear-head,
+.bear-body,
+.bear-paw,
+.bear-snout,
+.panda-patch {
+  position: absolute;
+}
+
+.teddy-bear .bear-ear,
+.teddy-bear .bear-head,
+.teddy-bear .bear-body,
+.teddy-bear .bear-paw {
+  background: linear-gradient(180deg, #d9b08d, #b97f58);
+}
+
+.panda-bear .bear-head,
+.panda-bear .bear-body {
+  background: linear-gradient(180deg, #fffdfd, #f1f1f1);
+}
+
+.panda-bear .bear-ear,
+.panda-bear .bear-paw,
+.panda-bear .panda-patch {
+  background: linear-gradient(180deg, #4d4951, #27242b);
+}
+
+.bear-ear {
+  top: 10%;
+  width: 24%;
+  height: 20%;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.bear-ear-left {
+  left: 14%;
+}
+
+.bear-ear-right {
+  right: 14%;
+}
+
+.bear-head {
+  left: 50%;
+  top: 18%;
+  width: 60%;
+  height: 40%;
+  margin-left: -30%;
+  border-radius: 46%;
+  z-index: 2;
+  box-shadow: 0 10px 20px rgba(150, 104, 86, 0.16);
+}
+
+.bear-eye,
+.bear-snout::before,
+.bear-snout::after {
+  position: absolute;
+  content: '';
+}
+
+.bear-eye {
+  top: 34%;
+  width: 8%;
+  height: 8%;
+  background: #3a2130;
+  border-radius: 50%;
+  z-index: 2;
+}
+
+.bear-eye-left {
+  left: 30%;
+}
+
+.bear-eye-right {
+  right: 30%;
+}
+
+.bear-snout {
+  left: 50%;
+  bottom: 18%;
+  width: 30%;
+  height: 22%;
+  margin-left: -15%;
+  background: #f7e6dc;
+  border-radius: 46%;
+  z-index: 2;
+}
+
+.panda-bear .bear-snout {
+  background: #f8f1ef;
+}
+
+.bear-snout::before {
+  left: 50%;
+  top: 26%;
+  width: 18%;
+  height: 18%;
+  margin-left: -9%;
+  background: #3a2130;
+  border-radius: 50%;
+}
+
+.bear-snout::after {
+  left: 50%;
+  top: 44%;
+  width: 2px;
+  height: 24%;
+  margin-left: -1px;
+  background: #3a2130;
+  border-radius: 999px;
+}
+
+.panda-patch {
+  top: 24%;
+  width: 22%;
+  height: 20%;
+  border-radius: 50%;
+}
+
+.panda-patch-left {
+  left: 20%;
+}
+
+.panda-patch-right {
+  right: 20%;
+}
+
+.bear-body {
+  left: 50%;
+  bottom: 4%;
+  width: 68%;
+  height: 42%;
+  margin-left: -34%;
+  border-radius: 42%;
+  z-index: 1;
+  box-shadow: 0 12px 22px rgba(150, 104, 86, 0.14);
+}
+
+.panda-bear .bear-body {
+  box-shadow: 0 12px 22px rgba(78, 78, 78, 0.12);
+}
+
+.bear-paw {
+  top: 18%;
+  width: 24%;
+  height: 34%;
+  border-radius: 44%;
+}
+
+.bear-paw-left {
+  left: -6%;
+  transform: rotate(16deg);
+}
+
+.bear-paw-right {
+  right: -6%;
+  transform: rotate(-16deg);
+}
+
 .halo-ring {
   position: absolute;
   left: 50%;
@@ -895,6 +1088,17 @@ h1 {
   }
 }
 
+@keyframes plushBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
 @media (max-width: 980px) {
   .interactive-stage {
     grid-template-columns: 92px 72px minmax(0, 1fr) 72px 92px;
@@ -910,6 +1114,10 @@ h1 {
     height: 200px;
     margin-left: -100px;
     margin-top: -100px;
+  }
+
+  .plush-row {
+    width: min(500px, 90%);
   }
 }
 
@@ -973,6 +1181,16 @@ h1 {
   .gift-box {
     width: 142px;
     height: 142px;
+  }
+
+  .plush-row {
+    top: 56%;
+    width: 94%;
+  }
+
+  .plush {
+    width: 72px;
+    height: 102px;
   }
 
   .envelope-stage {

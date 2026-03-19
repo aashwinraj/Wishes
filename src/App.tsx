@@ -125,6 +125,38 @@ function App() {
             <div className="halo-ring halo-one" />
             <div className="halo-ring halo-two" />
 
+            <div className={`plush-row ${giftOpened ? 'active' : ''}`} aria-hidden="true">
+              <div className="plush teddy-bear">
+                <span className="bear-ear bear-ear-left" />
+                <span className="bear-ear bear-ear-right" />
+                <span className="bear-head">
+                  <span className="bear-eye bear-eye-left" />
+                  <span className="bear-eye bear-eye-right" />
+                  <span className="bear-snout" />
+                </span>
+                <span className="bear-body">
+                  <span className="bear-paw bear-paw-left" />
+                  <span className="bear-paw bear-paw-right" />
+                </span>
+              </div>
+
+              <div className="plush panda-bear">
+                <span className="bear-ear bear-ear-left" />
+                <span className="bear-ear bear-ear-right" />
+                <span className="bear-head">
+                  <span className="panda-patch panda-patch-left" />
+                  <span className="panda-patch panda-patch-right" />
+                  <span className="bear-eye bear-eye-left" />
+                  <span className="bear-eye bear-eye-right" />
+                  <span className="bear-snout" />
+                </span>
+                <span className="bear-body">
+                  <span className="bear-paw bear-paw-left" />
+                  <span className="bear-paw bear-paw-right" />
+                </span>
+              </div>
+            </div>
+
             <button
               type="button"
               className={`gift-box ${giftOpened ? 'opened' : ''}`}
