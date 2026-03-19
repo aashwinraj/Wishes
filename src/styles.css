@@ -557,6 +557,10 @@ h1 {
   pointer-events: auto;
 }
 
+.envelope-stage.visible:not(.open) {
+  animation: envelopeTease 1.8s ease-in-out infinite;
+}
+
 .envelope-shadow {
   position: absolute;
   inset: auto 12% 8% 12%;
@@ -646,10 +650,17 @@ h1 {
   border: 2px solid #ffe3eb;
 }
 
+.envelope-stage.visible:not(.open) .letter-sheet {
+  opacity: 0;
+  transform: translateY(70%) scale(0.88);
+  animation: hiddenLetterTease 1.8s ease-in-out infinite;
+}
+
 .envelope-stage.open .letter-sheet {
   opacity: 1;
   transform: translateY(-128%) scale(1.02);
   z-index: 2;
+  animation: none;
 }
 
 .letter-title {
@@ -1012,6 +1023,52 @@ h1 {
 
   50% {
     transform: translate(-50%, -53%) scale(1.03);
+  }
+}
+
+@keyframes envelopeTease {
+  0%,
+  100% {
+    transform: translate(-50%, 0) rotate(0deg) scale(1);
+  }
+
+  20% {
+    transform: translate(-50.8%, -0.8%) rotate(-1deg) scale(1.01);
+  }
+
+  38% {
+    transform: translate(-49.2%, -1.4%) rotate(1deg) scale(1.01);
+  }
+
+  55% {
+    transform: translate(-50.6%, -0.5%) rotate(-0.7deg) scale(1.005);
+  }
+
+  72% {
+    transform: translate(-49.4%, -1.2%) rotate(0.8deg) scale(1.01);
+  }
+}
+
+@keyframes hiddenLetterTease {
+  0%,
+  100% {
+    transform: translateY(70%) scale(0.88);
+  }
+
+  22% {
+    transform: translateY(63%) scale(0.89);
+  }
+
+  42% {
+    transform: translateY(58%) scale(0.9);
+  }
+
+  58% {
+    transform: translateY(64%) scale(0.89);
+  }
+
+  76% {
+    transform: translateY(60%) scale(0.9);
   }
 }
 
