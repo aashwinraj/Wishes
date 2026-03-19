@@ -57,14 +57,20 @@ function App() {
     const stageRect = stage.getBoundingClientRect()
     const centerX = stageRect.left + stageRect.width / 2
     const centerY = stageRect.top + stageRect.height / 2
-    const horizontalRoom = Math.max(40, stageRect.width / 2 - width / 2 - 30)
-    const verticalRoom = Math.max(30, stageRect.height / 2 - height / 2 - 24)
+    const horizontalRoom = Math.max(120, stageRect.width / 2 - width / 2 - 18)
+    const verticalRoom = Math.max(80, stageRect.height / 2 - height / 2 - 10)
     const directionX = clientX <= centerX ? 1 : -1
     const directionY = clientY <= centerY ? 1 : -1
+    const randomFlipX = Math.random() > 0.72 ? -directionX : directionX
+    const randomVerticalBias = Math.random() > 0.5 ? 1 : -1
+    const nextX = randomFlipX * horizontalRoom * (0.72 + Math.random() * 0.24)
+    const nextY =
+      directionY * verticalRoom * (0.35 + Math.random() * 0.45) +
+      randomVerticalBias * Math.min(80, verticalRoom * 0.22)
 
     setGiftOffset({
-      x: directionX * horizontalRoom * (0.5 + Math.random() * 0.28),
-      y: directionY * verticalRoom * (0.2 + Math.random() * 0.5),
+      x: nextX,
+      y: nextY,
     })
     setDodgeCount((count) => count + 1)
   }
