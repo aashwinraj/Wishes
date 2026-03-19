@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 
 type FloatItem = {
   id: number
@@ -21,7 +21,19 @@ function App() {
   const [letterOpened, setLetterOpened] = useState(false)
   const [dodgeCount, setDodgeCount] = useState(0)
   const [giftOffset, setGiftOffset] = useState({ x: 0, y: 0 })
+  const [requiredDodges] = useState(() => 3 + Math.floor(Math.random() * 3))
+  const [isDodging, setIsDodging] = useState(false)
   const centerSceneRef = useRef<HTMLDivElement | null>(null)
+  const dodgeTimeoutRef = useRef<number | null>(null)
+
+  useEffect(
+    () => () => {
+      if (dodgeTimeoutRef.current !== null) {
+        window.clearTimeout(dodgeTimeoutRef.current)
+      }
+    },
+    [],
+  )
 
   const floatingKisses = useMemo(
     () =>
@@ -38,11 +50,11 @@ function App() {
   )
 
   const prompt = !giftOpened
-    ? dodgeCount === 0
-      ? 'Catch the gift box'
-      : dodgeCount === 1
-        ? 'It ran away... try again'
-        : 'Now click the gift box'
+    ? dodgeCount < requiredDodges
+      ? dodgeCount === 0
+        ? 'Catch the gift box'
+        : `It dodged you... ${requiredDodges - dodgeCount} escapes left`
+      : 'Now click the gift box'
     : !letterOpened
       ? 'Click the envelope to open your love letter'
       : 'Happy 5 year anniversary baby'
@@ -50,29 +62,43 @@ function App() {
   const dodgeGift = (clientX: number, clientY: number, width: number, height: number) => {
     const stage = centerSceneRef.current
 
-    if (!stage || giftOpened || dodgeCount >= 2) {
+    if (!stage || giftOpened || dodgeCount >= requiredDodges) {
       return
     }
 
     const stageRect = stage.getBoundingClientRect()
-    const centerX = stageRect.left + stageRect.width / 2
-    const centerY = stageRect.top + stageRect.height / 2
-    const horizontalRoom = Math.max(120, stageRect.width / 2 - width / 2 - 18)
-    const verticalRoom = Math.max(80, stageRect.height / 2 - height / 2 - 10)
-    const directionX = clientX <= centerX ? 1 : -1
-    const directionY = clientY <= centerY ? 1 : -1
-    const randomFlipX = Math.random() > 0.72 ? -directionX : directionX
-    const randomVerticalBias = Math.random() > 0.5 ? 1 : -1
-    const nextX = randomFlipX * horizontalRoom * (0.72 + Math.random() * 0.24)
-    const nextY =
-      directionY * verticalRoom * (0.35 + Math.random() * 0.45) +
-      randomVerticalBias * Math.min(80, verticalRoom * 0.22)
+    const cursorX = clientX - stageRect.left - stageRect.width / 2
+    const cursorY = clientY - stageRect.top - stageRect.height / 2
+    const maxX = Math.max(180, stageRect.width / 2 - width / 2 - 8)
+    const maxY = Math.max(110, stageRect.height / 2 - height / 2 - 8)
+    const minJump = Math.max(220, stageRect.width * 0.42)
+    let nextX = giftOffset.x
+    let nextY = giftOffset.y
 
-    setGiftOffset({
-      x: nextX,
-      y: nextY,
-    })
+    for (let attempt = 0; attempt < 16; attempt += 1) {
+      const candidateX = (Math.random() < 0.5 ? -1 : 1) * maxX * (0.82 + Math.random() * 0.18)
+      const candidateY = (Math.random() < 0.5 ? -1 : 1) * maxY * (0.58 + Math.random() * 0.42)
+      const jumpFromCurrent = Math.hypot(candidateX - giftOffset.x, candidateY - giftOffset.y)
+      const jumpFromCursor = Math.hypot(candidateX - cursorX, candidateY - cursorY)
+
+      if (jumpFromCurrent >= minJump && jumpFromCursor >= minJump * 0.8) {
+        nextX = candidateX
+        nextY = candidateY
+        break
+      }
+    }
+
+    setGiftOffset({ x: nextX, y: nextY })
     setDodgeCount((count) => count + 1)
+    setIsDodging(true)
+
+    if (dodgeTimeoutRef.current !== null) {
+      window.clearTimeout(dodgeTimeoutRef.current)
+    }
+
+    dodgeTimeoutRef.current = window.setTimeout(() => {
+      setIsDodging(false)
+    }, 320)
   }
 
   return (
@@ -193,7 +219,7 @@ function App() {
             </div>
 
             <div
-              className="gift-box-wrap"
+              className={isDodging ? 'gift-box-wrap dodging' : 'gift-box-wrap'}
               style={
                 {
                   ['--gift-x' as string]: `${giftOffset.x}px`,
@@ -213,7 +239,7 @@ function App() {
                   )
                 }}
                 onClick={(event) => {
-                  if (dodgeCount < 2) {
+                  if (dodgeCount < requiredDodges) {
                     dodgeGift(
                       event.clientX,
                       event.clientY,
