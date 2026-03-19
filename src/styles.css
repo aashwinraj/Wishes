@@ -444,14 +444,19 @@ h1 {
     linear-gradient(180deg, #fffdfc, #fff6f3),
     repeating-linear-gradient(180deg, transparent 0 28px, rgba(255, 192, 210, 0.18) 28px 29px);
   box-shadow: 0 18px 36px rgba(175, 93, 117, 0.18);
-  transform: translateY(52%) scale(0.9);
-  transition: transform 760ms cubic-bezier(0.2, 0.8, 0.2, 1);
-  z-index: 2;
+  opacity: 0;
+  transform: translateY(82%) scale(0.86);
+  transition:
+    transform 760ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 220ms ease;
+  z-index: 1;
   border: 2px solid #ffe3eb;
 }
 
 .envelope-stage.open .letter-sheet {
+  opacity: 1;
   transform: translateY(-128%) scale(1.02);
+  z-index: 2;
 }
 
 .letter-title {
